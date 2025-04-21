@@ -3,8 +3,17 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
 from langchain_ollama.llms import OllamaLLM
+from langchain.schema import BaseOutputParser
+
 
 load_dotenv()
+
+class StrOutputParser(BaseOutputParser):
+    def parse(self, text: str) -> str:
+        return text.strip()
+
+    def get_format_instructions(self) -> str:
+        return ""
 
 information = """
 Elon Reeve Musk (/ˈiːlɒn/ EE-lon; born June 28, 1971) is a businessman known for his leadership of Tesla, SpaceX, and X (formerly Twitter). Since 2025, he has been a senior advisor to United States president Donald Trump and the de facto head of the Department of Government Efficiency (DOGE). Musk has been the wealthiest person in the world since 2021; as of March 2025, Forbes estimates his net worth to be US$345 billion. He was named Time magazine's Person of the Year in 2021.
@@ -33,7 +42,7 @@ if __name__ == "__main__":
 
     llm = OllamaLLM(model="llama3.1")
 
-    chain = summary_prompt_template | llm
+    chain = summary_prompt_template | llm | StrOutputParser()
 
     res = chain.invoke({"information": information})
 
